@@ -173,3 +173,4 @@ cython_debug/
 
 # Large data folders
 data/raw_audio/
+data/raw_audio.zip
