@@ -175,3 +175,6 @@ cython_debug/
 data/raw_audio/
 data/raw_audio.zip
 data/raw_clips/
+
+# Social Media content stored in project directory
+content/
