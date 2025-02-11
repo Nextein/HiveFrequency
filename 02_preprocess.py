@@ -3,9 +3,33 @@ import glob
 import numpy as np
 import librosa
 import soundfile as sf
-import scipy.signal
+from pandas import DataFrame
+import scipy
+import pyrubberband as pyrb
+import resampy
+
 
 def detect_drop(y, sr):
+    """
+    Detects the drop in a track using spectral flux, RMS energy, and low-frequency emphasis.
+    Returns the drop frame and beat frames.
+    """
+    onset_env = librosa.onset.onset_strength(y=y, sr=sr, aggregate=np.median)
+    rms = librosa.feature.rms(y=y)[0]
+    
+    tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
+    
+    flux_diff = np.diff(onset_env)
+    threshold = np.percentile(flux_diff, 90)
+    
+    peaks = librosa.util.peak_pick(flux_diff, pre_max=3, post_max=3, pre_avg=3, post_avg=3, delta=threshold, wait=5)
+    
+    drop_candidate = peaks[0] if len(peaks) > 0 else np.argmax(flux_diff)
+    drop_frame = min(beat_frames, key=lambda x: abs(x - drop_candidate))
+    
+    return drop_frame, beat_frames, tempo
+
+def detect_drop_pro(y, sr):
     """
     Detects the drop in a drum and bass track using a combination of:
     - Spectral flux (onset strength)
@@ -65,100 +89,130 @@ def detect_drop(y, sr):
     
     return drop_frame, beat_frames
 
-def process_track_with_drop(file_path, target_bpm=174, sr=22050, n_mels=128, save_audio=True, output_dir="output_audio"):
+def extract_spectrogram(y_segment, sr, feature_type="mel", n_mels=128, n_mfcc=20):
     """
-    Processes a track by detecting the drop and extracting a 32-bar segment around it.
-    Saves the extracted segment as a WAV file for verification.
-    
-    Parameters:
-    - file_path: Path to the audio file
-    - target_bpm: Desired BPM for normalization (default: 174)
-    - sr: Sampling rate for processing
-    - n_mels: Number of mel frequency bins for spectrogram
-    - save_audio: Whether to save the extracted audio clip
-    - output_dir: Directory where extracted audio files will be stored
-    
-    Returns:
-    - S_db: Mel spectrogram of the extracted segment (or None if an issue occurs)
+    Extracts the spectrogram (mel, MFCC, or chroma).
     """
-    # Load the audio file
+    if feature_type == "mel":
+        S = librosa.feature.melspectrogram(y=y_segment, sr=sr, n_mels=n_mels)
+    elif feature_type == "mfcc":
+        S = librosa.feature.mfcc(y=y_segment, sr=sr, n_mfcc=n_mfcc)
+    elif feature_type == "chroma":
+        S = librosa.feature.chroma_stft(y=y_segment, sr=sr)
+    else:
+        raise ValueError("Invalid feature_type. Choose 'mel', 'mfcc', or 'chroma'.")
+
+    return librosa.power_to_db(S, ref=np.max)
+
+def estimate_bpm(y, sr, target_bpm=174):
+    """
+    Estimates BPM more accurately by considering multiple BPM candidates
+    and choosing the one closest to the target BPM.
+    """
+    # Compute BPM with different estimation methods
+    bpm_candidates = librosa.feature.tempo(y=y, sr=sr, aggregate=None)
+
+    # Pick the BPM closest to the expected range (e.g., 165-185 BPM for DnB)
+    bpm_candidates = bpm_candidates[(bpm_candidates > 150) & (bpm_candidates < 190)]
+    
+    if len(bpm_candidates) == 0:
+        bpm_candidates = librosa.beat.tempo(y=y, sr=sr)  # Fallback to default estimation
+    
+    estimated_bpm = min(bpm_candidates, key=lambda x: abs(x - target_bpm))
+    
+    return estimated_bpm
+
+def correct_bpm(estimated_bpm, target_bpm=174):
+    """
+    Corrects the estimated BPM if it's detected as half or double.
+    """
+    if estimated_bpm < target_bpm / 1.5:  # If BPM is less than 116, likely half
+        return estimated_bpm * 2
+    elif estimated_bpm > target_bpm * 1.5:  # If BPM is greater than 261, likely double
+        return estimated_bpm / 2
+    return estimated_bpm
+
+def process_track_with_drop(file_path, target_bpm=174, sr=22050, n_mels=128, save_audio=True, feature_type="mel", output_dir="output_audio"):
+    """
+    Processes a track, extracts the drop region, saves metadata, and validates output.
+    """
     y, orig_sr = librosa.load(file_path, sr=None)
-    
-    # Resample if needed
-    if orig_sr != sr:
-        print(f"{orig_sr} != {sr} -> Resampling audio to {sr}Hz ...")
-        y = librosa.resample(y=y, orig_sr=orig_sr, sr=sr)
-    
-    # Estimate BPM and normalize
-    estimated_bpm = librosa.beat.tempo(y=y, sr=sr)[0]
-    if estimated_bpm < 90:
-        estimated_bpm *= 2
-        estimated_bpm = int(estimated_bpm)
-    rate_factor = target_bpm / estimated_bpm
-    y = librosa.effects.time_stretch(y=y, rate=rate_factor)
-    
-    # Detect drop
-    drop_frame, beat_frames = detect_drop(y, sr)
-    
-    # Ensure we have enough beats (128 surrounding the drop)
-    required_beats = 32 * 4  # 128 beats for 32 bars
-    drop_index = np.where(beat_frames == drop_frame)[0][0]  # Index of the drop in beat_frames
-    
-    # Extract beats before and after drop
+    # y = librosa.resample(y=y, orig_sr=orig_sr, target_sr=sr) if orig_sr != sr else y
+    y = resampy.resample(y, orig_sr, sr, filter='kaiser_best') if orig_sr != sr else y
+
+
+    estimated_bpm = estimate_bpm(y, sr, target_bpm)
+    estimated_bpm = correct_bpm(estimated_bpm, target_bpm)
+
+    # y = librosa.effects.time_stretch(y=y, rate=target_bpm / estimated_bpm)
+    y = pyrb.time_stretch(y, sr, target_bpm / estimated_bpm)
+
+    # drop_frame, beat_frames = detect_drop_pro(y, sr)
+    drop_frame, beat_frames, tempo = detect_drop(y, sr)
+
+    required_beats = 4 * 32
+    drop_index = np.where(beat_frames == drop_frame)[0][0]
     start_idx = max(0, drop_index - required_beats // 2)
     end_idx = min(len(beat_frames) - 1, drop_index + required_beats // 2)
-    
-    # Convert beat frames to sample indices
+
     start_sample = librosa.frames_to_samples(beat_frames[start_idx])
     end_sample = librosa.frames_to_samples(beat_frames[end_idx])
-    
     y_segment = y[start_sample:end_sample]
 
-    # Save extracted audio clip for verification
     if save_audio:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        
-        output_filename = os.path.join(output_dir, os.path.basename(file_path).replace(".mp3", "").replace(".wav", "") + "_drop_clip.wav")
+        os.makedirs(output_dir, exist_ok=True)
+        output_filename = os.path.join(output_dir, os.path.basename(file_path).replace(".mp3", "").replace(".wav", "") + "_drop_segment.wav")
         sf.write(output_filename, y_segment, sr)
         print(f"Saved segmented audio: {output_filename}")
-    
-    # Compute mel spectrogram
-    S = librosa.feature.melspectrogram(y=y_segment, sr=sr, n_mels=n_mels)
-    S_db = librosa.power_to_db(S, ref=np.max)
-    
-    return S_db
 
-def process_folder_with_drop(folder_path, target_bpm=174, sr=22050, n_mels=128, save_audio=True, output_dir="output_audio"):
+    S_db = extract_spectrogram(y_segment, sr, feature_type, n_mels)
+
+    # Validate output dimensions
+    if S_db.shape[1] < 50:  # Arbitrary lower bound for too-short clips
+        print(f"Warning: {file_path} may have been cut incorrectly (spectrogram too short).")
+
+    # Log metadata
+    metadata = {
+        "file": file_path,
+        "drop_frame": drop_frame,
+        "start_sample": start_sample,
+        "end_sample": end_sample,
+        "tempo": tempo,
+        "spectrogram_shape": S_db.shape
+    }
+
+    return S_db, metadata
+
+def process_folder_with_drop(folder_path, target_bpm=174, sr=22050, n_mels=128, save_audio=True, feature_type="mel", output_dir="output_audio"):
     """
-    Processes an entire folder of tracks, extracting 32-bar spectrograms around the drop.
-    Saves extracted audio clips for verification.
-    
-    Parameters:
-    - folder_path: Path to the folder containing drum and bass tracks
-    - target_bpm: Desired BPM normalization
-    - sr: Sampling rate
-    - n_mels: Number of mel bins for spectrogram
-    - save_audio: Whether to save extracted audio clips
-    - output_dir: Directory where extracted audio files will be stored
-    
-    Returns:
-    - List of spectrogram matrices
+    Processes an entire folder, logs metadata, and saves extracted segments.
     """
-    audio_files = glob.glob(os.path.join(folder_path, '*.mp3')) + \
-                  glob.glob(os.path.join(folder_path, '*.wav'))
-    
-    dataset = []
-    
+    audio_files = glob.glob(os.path.join(folder_path, '*.mp3')) + glob.glob(os.path.join(folder_path, '*.wav'))
+    dataset, metadata_list = [], []
+
+    os.makedirs(output_dir, exist_ok=True)
+
     for file_path in audio_files:
         print(f"Processing {file_path}...")
-        S_db = process_track_with_drop(file_path, target_bpm, sr, n_mels, save_audio, output_dir)
-        if S_db is not None:
-            dataset.append(S_db)
-    
+        S_db, metadata = process_track_with_drop(file_path, target_bpm, sr, n_mels, save_audio, feature_type, output_dir)
+        dataset.append(S_db)
+        metadata_list.append(metadata)
+
+    # Save metadata to CSV
+    df_metadata = DataFrame(metadata_list)
+    df_metadata.to_csv(METADATA_FILE, index=False)
+    print(f"Metadata saved to {METADATA_FILE}")
+
     return dataset
 
-# Example usage:
+# Example usage
 folder = "data/raw_audio"
-clip_folder = "data/raw_clips"
-spectrogram_dataset = process_folder_with_drop(folder_path=folder, sr=44100, output_dir=clip_folder)
+output_folder="data/raw_clips"
+METADATA_FILE = "data/raw_clips/metadata.csv"
+SPECTROGRAM_DATASET_FILE = "data/spectrograms/spectrogram_dataset.npz"
+
+spectrogram_dataset = process_folder_with_drop(folder, feature_type="mel", output_dir=output_folder)
+
+# Save the dataset as a compressed NumPy array
+np.savez_compressed(SPECTROGRAM_DATASET_FILE, *spectrogram_dataset)
+print(f"Spectrogram dataset saved to {SPECTROGRAM_DATASET_FILE}")
