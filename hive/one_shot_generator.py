@@ -65,9 +65,8 @@ def sine_wave(freq, duration, sr=44100):
     t = torch.arange(0, duration, 1/sr)
     return torch.sin(2 * np.pi * freq * t)
 
-# Simple filters using torchaudio functional
 def lowpass(y, cutoff, sr=44100):
-    y = y.unsqueeze(0).unsqueeze(0)  # [1,1,N]
+    y = y.unsqueeze(0).unsqueeze(0)
     y = torchaudio.functional.lowpass_biquad(y, sr, cutoff)
     return y.squeeze()
 
@@ -85,10 +84,10 @@ def bandpass(y, center_freq, sr=44100):
 # Instrument generators
 # ----------------------
 def build_kick_fx(params, sr=44100):
-    freq = params.get('freq', 60)
+    freq = params.get('sub_freq', 60)
     duration = params.get('duration', 0.5)
     y = sine_wave(freq, duration, sr)
-    y = adsr_envelope(y, sr, attack=0.01, decay=0.2, sustain=0.0, release=0.05)
+    y = adsr_envelope(y, sr, attack=0.01, decay=params.get('sub_decay',0.2), sustain=0.0, release=0.05)
     y = lowpass(y, cutoff=150, sr=sr)
     return y
 
@@ -96,7 +95,7 @@ def build_bass_fx(params, sr=44100):
     freq = params.get('freq', 100)
     duration = params.get('duration', 1.0)
     y = sine_wave(freq, duration, sr)
-    y = adsr_envelope(y, sr, attack=0.01, decay=0.2, sustain=0.8, release=0.1)
+    y = adsr_envelope(y, sr, attack=0.01, decay=params.get('decay',0.2), sustain=params.get('sustain',0.8), release=0.1)
     cutoff = params.get('filter_cut', 400)
     y = lowpass(y, cutoff=cutoff, sr=sr)
     return y
@@ -104,10 +103,27 @@ def build_bass_fx(params, sr=44100):
 def build_hat_fx(params, sr=44100):
     duration = params.get('duration', 0.2)
     y = white_noise(duration, sr)
-    y = adsr_envelope(y, sr, attack=0.01, decay=0.05, sustain=0.3, release=0.05)
+    y = adsr_envelope(y, sr, attack=0.01, decay=params.get('decay',0.05), sustain=params.get('sustain',0.3), release=0.05)
     cutoff = params.get('filter_cut', 8000)
     y = bandpass(y, center_freq=cutoff, sr=sr)
     return y
+
+def build_snare_fx(params, sr=44100):
+    duration = params.get('duration', 0.3)
+    y = white_noise(duration, sr)
+    y = adsr_envelope(
+        y, sr,
+        attack=params.get('attack', 0.005),
+        decay=params.get('decay', 0.1),
+        sustain=0.0,
+        release=params.get('release', 0.01)
+    )
+    cutoff = params.get('tone_freq', 2000)
+    y = bandpass(y, center_freq=cutoff, sr=sr)
+    if params.get('distortion', 0) > 0:
+        y = torch.tanh(y * (1 + params['distortion']*5))
+    return y
+
 
 # ----------------------
 # Feature extraction
@@ -116,26 +132,29 @@ def compute_features(y, sr=44100):
     feats = {}
     Y = y.numpy().astype(float)
     feats['rms'] = float(np.sqrt(np.mean(Y**2)))
+    feats['max'] = float(np.max(Y))
+    feats['min'] = float(np.min(Y))
+    feats['mean'] = float(np.mean(Y))
     return feats
 
 # ----------------------
-# Sample generation
+# Sample generation (flattened, ML-ready)
 # ----------------------
 def generate_samples(presets_json, out_dir, n_total=1000, sr=44100, seed=42):
     np.random.seed(seed)
     out_dir = Path(out_dir)
     ensure_dir(out_dir)
-    presets = load_presets(presets_json)
+    presets = load_presets(presets_json)  # expects a **flat list of dicts**
     rows = []
     pbar = tqdm(total=n_total, desc='Generating samples')
     for i in range(n_total):
-        inst = np.random.choice(list(presets.keys()))
+        preset = np.random.choice(presets)
+        params = jitter_params(preset, jitter_fraction=0.05)
+        inst = params['instrument']
+        params['duration'] = params.get('duration', 1.0)
         inst_dir = out_dir / inst
         ensure_dir(inst_dir)
-        preset_list = presets[inst]
-        preset = np.random.choice(preset_list)
-        params = jitter_params(preset, jitter_fraction=0.05)
-        params['duration'] = params.get('duration', 1.0)
+
         if inst == 'kick':
             audio = build_kick_fx(params, sr=sr)
         elif inst == 'bass':
@@ -143,15 +162,18 @@ def generate_samples(presets_json, out_dir, n_total=1000, sr=44100, seed=42):
         elif inst == 'hat':
             audio = build_hat_fx(params, sr=sr)
         else:
-            continue
+            continue  # skip unsupported instruments
+
         wav_path = inst_dir / f"{inst}_{i:05d}.wav"
         torchaudio.save(str(wav_path), audio.unsqueeze(0), sr)
+
         feats = compute_features(audio, sr=sr)
-        row = {'file': str(wav_path.relative_to(out_dir)), 'instrument': inst}
-        row.update(params)
+        row = {'file': str(wav_path.relative_to(out_dir))}
+        row.update(params)  # flattened preset parameters including instrument and style
         row.update(feats)
         rows.append(row)
         pbar.update(1)
+
     pbar.close()
     df = pd.DataFrame(rows)
     df.to_csv(out_dir / 'metadata.csv', index=False)
@@ -162,6 +184,6 @@ def generate_samples(presets_json, out_dir, n_total=1000, sr=44100, seed=42):
 # Main
 # ----------------------
 if __name__ == '__main__':
-    presets_json = 'dnb_presets.json'
+    presets_json = 'dnb_presets.json'  # flattened presets file
     out_dir = './dnb_samples'
     generate_samples(presets_json, out_dir)
