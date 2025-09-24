@@ -95,52 +95,64 @@ def bandpass(y, center_freq, sr=44100):
 # ----------------------
 def build_kick(params, sr=44100):
     """
-    Pro-level DnB kick synthesis
-    Layers:
-    1. Sub layer: sine wave with fast exponential decay + pitch drop for punch
-    2. Mid punch: higher sine or triangle layer for attack
-    3. Click: high-frequency sine/noise transient for snap
-    4. Optional distortion and shaping
+    Pro-level generic kick synthesizer:
+    - Pitch envelope for body
+    - Amplitude envelope
+    - Click transient
+    - Optional distortion & filtering
     """
 
-    duration = params.get('duration', 0.5)
-    sub_freq = params.get('sub_freq', 50)
-    click_freq = params.get('click_tone_freq', 4000)
-    punch_freq = params.get('punch_freq', 120)  # mid layer
-    distortion = params.get('distortion', 0.3)
-    sub_decay = params.get('sub_decay', 0.2)
-    click_decay = params.get('click_decay', 0.012)
-    punch_decay = params.get('punch_decay', 0.05)
+    duration = params.get("duration", 0.5)
+    n_samples = int(sr * duration)
+    t = torch.linspace(0, duration, n_samples)
 
-    t = torch.arange(0, duration, 1/sr)
+    # ----------------------------
+    # 1. Pitch-swept sub oscillator
+    # ----------------------------
+    base_freq = params.get("sub_freq", 50)
+    start_freq = params.get("start_freq", base_freq * 3)   # Vital-like sweep
+    pitch_decay = params.get("pitch_decay", 30.0)
 
-    # --- Sub layer with fast pitch drop ---
-    pitch_env = torch.exp(-12*t)  # fast exponential pitch drop
-    sub = torch.sin(2*np.pi*sub_freq*t*(1 + 0.5*pitch_env))
-    sub = adsr_envelope(sub, sr, attack=0.001, decay=sub_decay, sustain=0.0, release=0.01)
-    sub = lowpass(sub, cutoff=180, sr=sr)  # deep sub
+    pitch_curve = torch.exp(-t * pitch_decay)
+    freqs = base_freq + (start_freq - base_freq) * pitch_curve
+    phase = 2 * np.pi * torch.cumsum(freqs, dim=0) / sr
+    sub = torch.sin(phase) * params.get("sub_level", 1.0)
+    sub = adsr_envelope(sub, sr, attack=0.001,
+                        decay=params.get("sub_decay", 0.2),
+                        sustain=0.0, release=0.01)
 
-    # --- Mid punch layer ---
-    punch = torch.sin(2*np.pi*punch_freq*t)
-    punch = adsr_envelope(punch, sr, attack=0.001, decay=punch_decay, sustain=0.0, release=0.0)
-    punch = lowpass(punch, cutoff=500, sr=sr)  # mid body
+    # ----------------------------
+    # 2. Click / transient
+    # ----------------------------
+    click = torch.zeros_like(sub)
+    if params.get("click_amp", 0) > 0:
+        click_freq = params.get("click_tone_freq", 4000)
+        click_decay = params.get("click_decay", 0.01)
+        click_wave = torch.sin(2 * np.pi * click_freq * t)
+        click_env = torch.exp(-t * (1 / max(click_decay, 1e-5)))
+        click = click_wave * click_env * params["click_amp"]
 
-    # --- Click layer for attack ---
-    click = torch.sin(2*np.pi*click_freq*t)
-    click = adsr_envelope(click, sr, attack=0.0, decay=click_decay, sustain=0.0, release=0.0)
-    click = highpass(click, cutoff=click_freq/2, sr=sr)  # crisp attack
+    # ----------------------------
+    # 3. Combine
+    # ----------------------------
+    y = sub + click
 
-    # Combine layers
-    kick = sub + punch + click
+    # ----------------------------
+    # 4. Distortion
+    # ----------------------------
+    drive = params.get("distortion", 0)
+    if drive > 0:
+        y = torch.tanh(y * (1 + drive * 5))
 
-    # Optional distortion for aggressiveness
-    if distortion > 0:
-        kick = torch.tanh(kick*(1 + distortion*5))
+    # ----------------------------
+    # 5. Optional tone shaping
+    # ----------------------------
+    if params.get("brightness", 0.5) > 0.6:
+        y = highpass(y, cutoff=80 + params["brightness"] * 2000, sr=sr)
+    else:
+        y = lowpass(y, cutoff=200 + params["brightness"] * 4000, sr=sr)
 
-    # Normalize final kick
-    kick = kick / (kick.abs().max() + 1e-9)
-
-    return kick
+    return y / (y.abs().max() + 1e-9)
 
 
 def build_snare(params, sr=44100):
@@ -270,20 +282,20 @@ def generate_samples(presets_json, out_dir, n_total=1000, sr=44100, seed=42):
     out_dir = Path(out_dir)
     ensure_dir(out_dir)
 
-    presets = load_presets(presets_json)
+    presets = load_presets(presets_json)  # this is a flat list
     rows = []
     pbar = tqdm(total=n_total, desc='Generating samples')
     for i in range(n_total):
+        # pick a random flat preset
         preset = np.random.choice(presets)
         params = jitter_params(preset, jitter_fraction=0.05)
         inst = params['instrument']
         params['duration'] = params.get('duration', 1.0)
+
         inst_dir = out_dir / inst
         ensure_dir(inst_dir)
-        preset_list = presets[inst]
-        preset = np.random.choice(preset_list)
-        params = jitter_params(preset, jitter_fraction=0.07)
-        params['duration'] = params.get('duration', 1.0)
+
+        # synthesize based on instrument
         if inst == 'kick':
             audio = build_kick(params, sr=sr)
         elif inst == 'bass':
@@ -294,12 +306,15 @@ def generate_samples(presets_json, out_dir, n_total=1000, sr=44100, seed=42):
             audio = build_snare(params, sr=sr)
         else:
             continue
+
+        # save file
         wav_path = inst_dir / get_next_sample_name(inst_dir, inst)
         torchaudio.save(str(wav_path), audio.unsqueeze(0), sr)
 
+        # compute metadata
         feats = compute_features(audio, sr=sr)
         row = {'file': str(wav_path.relative_to(out_dir))}
-        row.update(params)  # flattened preset parameters including instrument and style
+        row.update(params)  # keep instrument + style + all parameters
         row.update(feats)
         rows.append(row)
         pbar.update(1)

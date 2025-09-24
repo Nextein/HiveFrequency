@@ -1,8 +1,177 @@
 [
-{"instrument":"kick","pattern":[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0]},
-{"instrument":"kick","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0]},
-{"instrument":"snare","pattern":[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0]},
-{"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-{"instrument":"hat","pattern":[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]},
-{"instrument":"bass","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]}
+  {"instrument":"kick","pattern":[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],"style":"liquid","complexity":1},
+  {"instrument":"kick","pattern":[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],"style":"liquid","complexity":2},
+  {"instrument":"kick","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0],"style":"liquid","complexity":3},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],"style":"liquid","complexity":1},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1],"style":"liquid","complexity":3},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0],"style":"liquid","complexity":4},
+
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"liquid-funk","complexity":1},
+  {"instrument":"hat","pattern":[1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,0],"style":"liquid-funk","complexity":3},
+  {"instrument":"hat","pattern":[1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0],"style":"liquid-funk","complexity":4},
+
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0],"style":"liquid","complexity":1},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],"style":"liquid","complexity":3},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"liquid","complexity":4},
+
+  {"instrument":"kick","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0],"style":"neurofunk","complexity":4},
+  {"instrument":"kick","pattern":[1,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0],"style":"neurofunk","complexity":5},
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0],"style":"neurofunk","complexity":3},
+
+  {"instrument":"snare","pattern":[0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],"style":"neurofunk","complexity":5},
+  {"instrument":"snare","pattern":[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],"style":"neurofunk","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0],"style":"neurofunk","complexity":4},
+
+  {"instrument":"hat","pattern":[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0],"style":"neurofunk","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],"style":"neurofunk","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0],"style":"neurofunk","complexity":4},
+
+  {"instrument":"bass","pattern":[1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1],"style":"neurofunk","complexity":5},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],"style":"neurofunk","complexity":4},
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0],"style":"neurofunk","complexity":3},
+
+  {"instrument":"kick","pattern":[1,0,0,1,0,0,1,0,1,1,0,1,0,0,1,0],"style":"jungle","complexity":5},
+  {"instrument":"kick","pattern":[1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0],"style":"jungle","complexity":5},
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,1,0,0,1,0,0,1,0,1,0],"style":"jungle","complexity":4},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1],"style":"jungle","complexity":5},
+  {"instrument":"snare","pattern":[0,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0],"style":"jungle","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],"style":"jungle","complexity":5},
+
+  {"instrument":"hat","pattern":[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0],"style":"jungle","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1],"style":"jungle","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0],"style":"jungle","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],"style":"jungle","complexity":5},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0],"style":"jungle","complexity":5},
+  {"instrument":"bass","pattern":[1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0],"style":"jungle","complexity":5},
+
+  {"instrument":"kick","pattern":[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0],"style":"jump-up","complexity":3},
+  {"instrument":"kick","pattern":[1,0,0,1,0,1,0,0,1,0,1,0,0,1,0,0],"style":"jump-up","complexity":4},
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0],"style":"jump-up","complexity":4},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],"style":"jump-up","complexity":2},
+  {"instrument":"snare","pattern":[0,0,0,1,0,0,1,0,0,0,1,0,0,0,1,0],"style":"jump-up","complexity":4},
+  {"instrument":"snare","pattern":[0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,1],"style":"jump-up","complexity":5},
+
+  {"instrument":"hat","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],"style":"jump-up","complexity":3},
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,0,1,0,1],"style":"jump-up","complexity":4},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],"style":"jump-up","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0],"style":"jump-up","complexity":4},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],"style":"jump-up","complexity":4},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"jump-up","complexity":5},
+
+  {"instrument":"kick","pattern":[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],"style":"halftime","complexity":1},
+  {"instrument":"kick","pattern":[1,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0],"style":"halftime","complexity":2},
+  {"instrument":"kick","pattern":[1,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0],"style":"halftime","complexity":3},
+
+  {"instrument":"snare","pattern":[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],"style":"halftime","complexity":1},
+  {"instrument":"snare","pattern":[0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1],"style":"halftime","complexity":3},
+  {"instrument":"snare","pattern":[0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0],"style":"halftime","complexity":4},
+
+  {"instrument":"hat","pattern":[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],"style":"halftime","complexity":1},
+  {"instrument":"hat","pattern":[1,0,1,0,1,1,0,1,0,1,0,1,0,1,0,1],"style":"halftime","complexity":3},
+  {"instrument":"hat","pattern":[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1],"style":"halftime","complexity":4},
+
+  {"instrument":"bass","pattern":[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],"style":"halftime","complexity":1},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],"style":"halftime","complexity":3},
+  {"instrument":"bass","pattern":[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],"style":"halftime","complexity":4},
+
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],"style":"rolling","complexity":2},
+  {"instrument":"kick","pattern":[1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1],"style":"rolling","complexity":4},
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0],"style":"rolling","complexity":3},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],"style":"rolling","complexity":2},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"rolling","complexity":4},
+  {"instrument":"snare","pattern":[0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,1],"style":"rolling","complexity":4},
+
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"rolling","complexity":2},
+  {"instrument":"hat","pattern":[1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1],"style":"rolling","complexity":4},
+  {"instrument":"hat","pattern":[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0],"style":"rolling","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],"style":"rolling","complexity":2},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"rolling","complexity":5},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],"style":"rolling","complexity":3},
+
+  {"instrument":"kick","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],"style":"breakbeat","complexity":5},
+  {"instrument":"kick","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1],"style":"breakbeat","complexity":5},
+  {"instrument":"kick","pattern":[1,0,0,1,1,0,1,0,0,1,1,0,1,0,0,1],"style":"breakbeat","complexity":5},
+
+  {"instrument":"snare","pattern":[0,0,1,0,1,0,1,0,0,1,0,1,0,1,0,1],"style":"breakbeat","complexity":5},
+  {"instrument":"snare","pattern":[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],"style":"breakbeat","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,1,0,1,1,0,1,0,1,0,1,0,1,0],"style":"breakbeat","complexity":5},
+
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],"style":"breakbeat","complexity":5},
+  {"instrument":"hat","pattern":[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0],"style":"breakbeat","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0],"style":"breakbeat","complexity":5},
+
+  {"instrument":"bass","pattern":[1,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],"style":"breakbeat","complexity":5},
+  {"instrument":"bass","pattern":[1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,1],"style":"breakbeat","complexity":5},
+  {"instrument":"bass","pattern":[1,0,0,1,0,1,0,0,1,0,1,0,0,1,0,1],"style":"breakbeat","complexity":5},
+
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0],"style":"drumfunk","complexity":5},
+  {"instrument":"kick","pattern":[1,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0],"style":"drumfunk","complexity":5},
+  {"instrument":"kick","pattern":[1,0,0,1,0,0,1,1,0,1,0,0,1,0,1,0],"style":"drumfunk","complexity":5},
+
+  {"instrument":"snare","pattern":[0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0],"style":"drumfunk","complexity":5},
+  {"instrument":"snare","pattern":[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],"style":"drumfunk","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],"style":"drumfunk","complexity":5},
+
+  {"instrument":"hat","pattern":[1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,1],"style":"drumfunk","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0],"style":"drumfunk","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,1,0,1,0,1,1,0,1,0,1],"style":"drumfunk","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0],"style":"drumfunk","complexity":5},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],"style":"drumfunk","complexity":5},
+  {"instrument":"bass","pattern":[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0],"style":"drumfunk","complexity":5},
+
+  {"instrument":"kick","pattern":[1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0],"style":"techstep","complexity":4},
+  {"instrument":"kick","pattern":[1,0,1,0,0,0,1,0,1,0,0,0,1,0,0,0],"style":"techstep","complexity":4},
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0],"style":"techstep","complexity":4},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],"style":"techstep","complexity":4},
+  {"instrument":"snare","pattern":[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1],"style":"techstep","complexity":4},
+  {"instrument":"snare","pattern":[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],"style":"techstep","complexity":4},
+
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"techstep","complexity":3},
+  {"instrument":"hat","pattern":[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0],"style":"techstep","complexity":4},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],"style":"techstep","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,0,1,0,1,0,1,1,0,1,0,1,0,1,0],"style":"techstep","complexity":5},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0],"style":"techstep","complexity":4},
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,1,0,0,1,0,0,1,0,0],"style":"techstep","complexity":3},
+
+  {"instrument":"kick","pattern":[1,0,0,1,0,1,1,0,1,0,1,0,1,0,1,0],"style":"darkstep","complexity":5},
+  {"instrument":"kick","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1],"style":"darkstep","complexity":5},
+  {"instrument":"kick","pattern":[1,0,0,1,1,0,1,0,1,0,0,1,0,1,0,0],"style":"darkstep","complexity":5},
+
+  {"instrument":"snare","pattern":[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],"style":"darkstep","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1],"style":"darkstep","complexity":5},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,1,0,0,1,0,1,0,1,0,1],"style":"darkstep","complexity":5},
+
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0],"style":"darkstep","complexity":5},
+  {"instrument":"hat","pattern":[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,1],"style":"darkstep","complexity":5},
+  {"instrument":"hat","pattern":[1,0,1,1,0,1,1,0,1,1,0,1,1,0,1,1],"style":"darkstep","complexity":5},
+
+  {"instrument":"bass","pattern":[1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1],"style":"darkstep","complexity":5},
+  {"instrument":"bass","pattern":[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],"style":"darkstep","complexity":4},
+  {"instrument":"bass","pattern":[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0],"style":"darkstep","complexity":5},
+
+  {"instrument":"kick","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],"style":"dancehall","complexity":2},
+  {"instrument":"kick","pattern":[1,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0],"style":"dancehall","complexity":3},
+  {"instrument":"kick","pattern":[1,0,0,1,0,0,0,1,0,0,1,0,0,0,1,0],"style":"dancehall","complexity":3},
+
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],"style":"dancehall","complexity":2},
+  {"instrument":"snare","pattern":[0,0,0,1,0,1,0,0,1,0,1,0,0,1,0,0],"style":"dancehall","complexity":3},
+  {"instrument":"snare","pattern":[0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0],"style":"dancehall","complexity":3},
+
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],"style":"dancehall","complexity":2},
+  {"instrument":"hat","pattern":[1,0,0,1,0,1,0,0,1,0,0,1,0,1,0,0],"style":"dancehall","complexity":3},
+  {"instrument":"hat","pattern":[1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0],"style":"dancehall","complexity":4},
+
+  {"instrument":"bass","pattern":[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],"style":"dancehall","complexity":2},
+  {"instrument":"bass","pattern":[1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0],"style":"dancehall","complexity":3},
+  {"instrument":"bass","pattern":[1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0],"style":"dancehall","complexity":4,"loudness":0.94}
 ]
