@@ -1,0 +1,99 @@
+🎛️ Preset Bank (first version)
+🔊 Kicks
+
+Neuro Punch
+
+Sub: 48 Hz, fast decay (~0.15s)
+
+Click: strong 4 kHz transient, short (~10 ms)
+
+Drive: medium (~0.4)
+
+Brightness: medium-high
+→ Result: tight, punchy kick with bite in the mids, works in Neuro/Techstep.
+
+Jungle Thud
+
+Sub: 60 Hz, longer decay (~0.25s)
+
+Click: noisier, less tonal (~2.5 kHz band)
+
+Drive: light
+
+Brightness: low
+→ Result: rounder, warmer thump, fits old-school Jungle with loose bottom end.
+
+Aggro Slam
+
+Sub: 45 Hz, short decay (~0.1s)
+
+Click: high amplitude, sharp, ~5–6 kHz
+
+Drive: high (0.7+)
+
+Brightness: high
+→ Result: clipped, distorted, aggressive — think Jump-Up / hard Neuro.
+
+🎸 Basses
+
+Reese Classic
+
+Osc: Detuned saws at 55 Hz
+
+Sub: on
+
+Filter cutoff: ~200 Hz, slow envelope
+
+Drive: medium (0.3–0.5)
+→ Result: classic “wobble” Reese with warm growl.
+
+Neuro Growl
+
+Osc: Sine+FM at ~50 Hz
+
+Drive: high
+
+Filter cutoff: ~120 Hz, with resonance
+
+Brightness: high (adds metallic overtones)
+→ Result: sharp, dirty midrange, works for neuro rollers.
+
+Sub Roller
+
+Pure sine at 40 Hz
+
+No sub-octave (already a sub)
+
+Drive: minimal
+
+Brightness: very low
+→ Result: clean sub, useful as layering foundation.
+
+🥁 Hats
+
+Tight Shaker
+
+Noise-heavy, bandpassed ~7 kHz
+
+Short decay (~0.02s)
+
+Brightness: medium
+→ Result: short, choppy hats (good for rolling hats).
+
+Open Jungle Hat
+
+Noise + sine partial at ~10 kHz
+
+Longer decay (~0.1–0.15s)
+
+Brightness: high
+→ Result: airy open hat, Jungle flavor.
+
+Metallic Click
+
+Bandpassed noise + partial at ~8 kHz
+
+Super short decay
+
+Brightness: very high
+→ Result: metallic, clicky tick, percussive.
